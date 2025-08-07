@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wedding Invitation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Playfair+Display:wght@400;600&display=swap');
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Playfair Display', serif;
+background: linear-gradient(135deg, #ffffff 0%, #e9d5e7 100%);
+min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+padding: 20px;
+perspective: 2000px;
+}
+
+.phone {
+display: none;
+position: fixed;
+width: 100%;
+height: 100%;
+top: 0%;
+padding-top: 40vh;
+left: 50%;
+transform: translateX(-50%);
+z-index: 1000;
+background: white;
+text-align: center;
+}
+
+.invitation-container {
+position: relative;
+width: 800px; /* Make container wide enough to show both inner pages */
+height: 600px;
+max-width: 80vw;
+max-height: 90vh;
+overflow: visible; /* Allow both pages to be seen */
+}
+
+.booklet {
+position: relative;
+width: 100%;
+height: 100%;
+transform-style: preserve-3d;
+}
+
+.booklet-state {
+position: absolute;
+width: 100%;
+height: 100%;
+opacity: 0;
+transition: opacity 0.8s ease;
+pointer-events: none;
+}
+
+.booklet-state.active {
+opacity: 1;
+pointer-events: all;
+}
+
+/* State 1: Front Cover (Page 1) */
+.state-front {
+display: flex;
+justify-content: flex-start; /* Align to left side of wider container */
+align-items: center;
+}
+
+.front-page {
+width: 400px; /* Single page width */
+height: 100%;
+position: relative;
+border-radius: 0 20px 20px 0;
+box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+background: url('./images/1.png');
+background-size: cover;
+background-position: center;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+color: white;
+}
+
+.spine-left {
+position: absolute;
+left: -8px;
+top: 0;
+width: 8px;
+height: 100%;
+background: linear-gradient(to right, #333, #555, #333);
+border-radius: 4px 0 0 4px;
+box-shadow: inset 2px 0 4px rgba(0,0,0,0.3);
+z-index: 10;
+}
+
+/* State 2: Inner Pages (Pages 2 & 3) */
+.state-inner {
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.inner-pages {
+width: 800px; /* 200% of single page width */
+height: 100%;
+display: flex;
+position: relative;
+left: 0; /* No offset needed now */
+transform: translateX(0);
+}
+
+.inner-page {
+width: 400px; /* Each page is full width (100% of original page size) */
+height: 100%;
+padding: 40px 30px;
+display: flex;
+flex-direction: column;
+justify-content: center;
+text-align: center;
+box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+background-size: cover;
+background-position: center;
+color: white;
+}
+
+.inner-page-2 {
+background-image: url('./images/2.png');
+border-radius: 20px 0 0 20px;
+}
+
+.inner-page-3 {
+background-image: url('./images/3.png');
+border-radius: 0 20px 20px 0;
+}
+
+.spine-center {
+position: absolute;
+left: 400px; /* Positioned at the junction between the two full-width pages */
+top: 0;
+transform: translateX(-50%);
+width: 12px;
+height: 100%;
+background: linear-gradient(to right, #333, #555, #777, #555, #333);
+box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+z-index: 10;
+}
+
+.spine-center::before {
+content: '';
+position: absolute;
+top: 10%;
+left: 50%;
+transform: translateX(-50%);
+width: 2px;
+height: 80%;
+background: rgba(0,0,0,0.3);
+border-radius: 1px;
+}
+
+/* State 3: Back Cover (Page 4) */
+.state-back {
+display: flex;
+justify-content: flex-end; /* Align to right side of wider container */
+align-items: center;
+}
+
+.back-page {
+width: 400px; /* Single page width */
+height: 100%;
+position: relative;
+border-radius: 20px 0 0 20px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+background-image: url('./images/4.png');
+background-size: cover;
+background-position: center;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+color: #8b4513;
+padding: 40px 30px;
+text-align: center;
+}
+
+.spine-right {
+position: absolute;
+right: -8px;
+top: 0;
+width: 8px;
+height: 100%;
+background: linear-gradient(to left, #333, #555, #333);
+border-radius: 0 4px 4px 0;
+box-shadow: inset -2px 0 4px rgba(0,0,0,0.3);
+z-index: 10;
+}
+
+/* Typography */
+.ornament {
+font-size: 4rem;
+margin: 20px 0;
+}
+
+.front-title {
+font-family: 'Dancing Script', cursive;
+font-size: 2.5rem;
+font-weight: 700;
+text-align: center;
+margin: 10px 0;
+}
+
+.front-subtitle {
+font-size: 1rem;
+letter-spacing: 2px;
+text-transform: uppercase;
+text-align: center;
+opacity: 0.9;
+}
+
+.couples-names {
+font-family: 'Dancing Script', cursive;
+font-size: 2.2rem;
+font-weight: 700;
+margin-bottom: 20px;
+color: #d2691e;
+}
+
+.wedding-date {
+font-size: 1rem;
+margin-bottom: 25px;
+letter-spacing: 1px;
+}
+
+.love-quote {
+font-style: italic;
+font-size: 0.85rem;
+line-height: 1.6;
+opacity: 0.8;
+}
+
+.section-title {
+font-family: 'Dancing Script', cursive;
+font-size: 1.4rem;
+font-weight: 600;
+margin-bottom: 8px;
+color: #34495e;
+}
+
+.section-content {
+font-size: 0.8rem;
+line-height: 1.4;
+margin-bottom: 20px;
+}
+
+.ceremony-details, .reception-details, .rsvp-details {
+margin-bottom: 20px;
+}
+
+/* Navigation */
+.nav-arrow {
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+width: 50px;
+height: 50px;
+background: rgba(255,255,255,0.9);
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+font-size: 1.5rem;
+color: #667eea;
+box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+transition: all 0.3s ease;
+z-index: 100;
+user-select: none;
+padding-bottom: 0.5rem;
+}
+
+.nav-arrow:hover {
+background: white;
+transform: translateY(-50%) scale(1.1);
+box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.nav-arrow.disabled {
+opacity: 0.3;
+cursor: not-allowed;
+pointer-events: none;
+}
+
+.nav-prev {
+left: -80px;
+}
+
+.nav-next {
+right: -80px;
+}
+
+/* Instruction text */
+.instruction {
+position: absolute;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+color: rgba(255,255,255,0.8);
+font-size: 0.8rem;
+z-index: 10;
+text-align: center;
+}
+
+.instruction-back {
+color: rgba(139,69,19,0.8);
+}
+
+/* Page turn animation effect */
+.booklet.turning {
+pointer-events: none;
+}
+
+.booklet-state {
+cursor: grab;
+}
+
+.booklet-state:active {
+cursor: grabbing;
+}
+
+.rsvp,.rsvp .booklet-state {
+cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div class="phone">Please open this link on a computer or <a href="https://withjoy.com/erenrich-lewis/rsvp">click here to RSVP</a></div>
+<div class="invitation-container">
+<!-- Navigation Arrows -->
+<div class="nav-arrow nav-prev" id="prevBtn">‹</div>
+<div class="nav-arrow nav-next" id="nextBtn">›</div>
+
+<div class="booklet">
+<!-- State 1: Front Cover (Page 1) -->
+<div class="booklet-state state-front active" id="state1">
+<div class="front-page">
+<div class="spine-left"></div>
+<!-- Content replaced with image placeholder above -->
+</div>
+</div>
+
+<!-- State 2: Inner Pages (Pages 2 & 3 together) -->
+<div class="booklet-state state-inner" id="state2">
+<div class="inner-pages">
+<!-- Page 2 - Left Inner Page -->
+<div class="inner-page inner-page-2">
+<!-- Content replaced with image placeholder above -->
+</div>
+
+<!-- Center Spine -->
+<div class="spine-center"></div>
+
+<!-- Page 3 - Right Inner Page -->
+<div class="inner-page inner-page-3">
+<!-- Content replaced with image placeholder above -->
+</div>
+
+</div>
+</div>
+
+<!-- State 3: Back Cover (Page 4) -->
+<a href="https://withjoy.com/erenrich-lewis/rsvp" title="RSVP" class="rsvp"><div class="booklet-state state-back" id="state3">
+<div class="back-page">
+<div class="spine-right"></div>
+<!-- Content replaced with image placeholder above -->
+</div>
+</div>
+</a>
+</div>
+</div>
+
+<script>
+let currentState = 1; // 1: front, 2: inner pages, 3: back
+
+const booklet = document.querySelector('.booklet');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const useSm = window.innerWidth < 960;
+if (useSm) {
+    document.querySelector(".phone").style.display = "block";
+}
+const states = document.querySelectorAll('.booklet-state');
+
+function updateBooklet() {
+// Remove active class from all states
+states.forEach(state => state.classList.remove('active'));
+
+// Add active class to current state
+document.getElementById(`state${currentState}`).classList.add('active');
+
+updateNavigation();
+}
+
+function updateNavigation() {
+    const maxPages = useSm ? 4 : 3; // Total number of states
+    prevBtn.classList.toggle('disabled', currentState === 1);
+    nextBtn.classList.toggle('disabled', currentState === maxPages);
+}
+
+function goToState(stateNumber) {
+if (stateNumber < 1 || stateNumber > 3 || stateNumber === currentState) return;
+
+// Add turning effect
+booklet.classList.add('turning');
+
+currentState = stateNumber;
+updateBooklet();
+
+// Remove turning effect after animation
+setTimeout(() => {
+booklet.classList.remove('turning');
+}, 800);
+}
+
+function nextState() {
+if (currentState < 3) {
+goToState(currentState + 1);
+}
+}
+
+function prevState() {
+if (currentState > 1) {
+goToState(currentState - 1);
+}
+}
+
+// Navigation button events
+nextBtn.addEventListener('click', nextState);
+prevBtn.addEventListener('click', prevState);
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+if (e.key === 'ArrowRight') {
+e.preventDefault();
+nextState();
+} else if (e.key === 'ArrowLeft') {
+e.preventDefault();
+prevState();
+}
+});
+
+// Drag functionality
+let isDragging = false;
+let startX = 0;
+
+states.forEach(state => {
+state.addEventListener('mousedown', startDrag);
+state.addEventListener('touchstart', startDrag, { passive: false });
+});
+
+document.addEventListener('mousemove', drag);
+document.addEventListener('touchmove', drag, { passive: false });
+document.addEventListener('mouseup', endDrag);
+document.addEventListener('touchend', endDrag);
+
+function startDrag(e) {
+if (booklet.classList.contains('turning')) return;
+isDragging = true;
+startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+}
+
+function drag(e) {
+if (!isDragging) return;
+e.preventDefault();
+}
+
+function endDrag(e) {
+if (!isDragging) return;
+isDragging = false;
+
+const currentX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+const deltaX = currentX - startX;
+const threshold = 50;
+
+if (Math.abs(deltaX) > threshold) {
+if (deltaX < 0) {
+// Dragged left - next state
+nextState();
+} else {
+// Dragged right - previous state
+prevState();
+}
+}
+}
+
+// Initialize
+updateBooklet();
+</script>
+</body>
+</html>
